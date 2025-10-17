@@ -3,6 +3,7 @@
 """
 from pydantic import BaseModel, Field
 from typing import Optional
+from app.schemas.user import User
 
 
 class Token(BaseModel):
@@ -10,6 +11,7 @@ class Token(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+    user: User  # 添加用户信息
 
 
 class TokenPayload(BaseModel):

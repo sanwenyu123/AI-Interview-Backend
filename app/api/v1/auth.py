@@ -29,7 +29,7 @@ async def register(
 ):
     """
     用户注册
-    
+
     - **username**: 用户名（3-50字符，唯一）
     - **email**: 邮箱（唯一）
     - **password**: 密码（至少6字符）
@@ -40,14 +40,14 @@ async def register(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="用户名已被使用"
         )
-    
+
     # 检查邮箱是否已存在
     if get_user_by_email(db, user_create.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="邮箱已被使用"
         )
-    
+
     # 创建用户
     user = create_user(db, user_create)
     if not user:
@@ -55,7 +55,7 @@ async def register(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="用户创建失败"
         )
-    
+
     return user
 
 
@@ -66,10 +66,10 @@ async def login(
 ):
     """
     用户登录
-    
+
     - **username**: 用户名
     - **password**: 密码
-    
+
     返回访问令牌和刷新令牌
     """
     # 验证用户
@@ -80,10 +80,17 @@ async def login(
             detail="用户名或密码错误",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # 生成令牌
     tokens = generate_tokens(user.id)
-    return tokens
+
+    # 返回令牌和用户信息
+    return {
+        "access_token": tokens["access_token"],
+        "refresh_token": tokens["refresh_token"],
+        "token_type": tokens["token_type"],
+        "user": user
+    }
 
 
 @router.post("/refresh", response_model=Token)
@@ -93,9 +100,9 @@ async def refresh_token(
 ):
     """
     刷新访问令牌
-    
+
     - **refresh_token**: 刷新令牌
-    
+
     返回新的访问令牌和刷新令牌
     """
     # 解码刷新令牌
@@ -106,7 +113,7 @@ async def refresh_token(
             detail="无效的刷新令牌",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # 检查令牌类型
     if payload.get("type") != "refresh":
         raise HTTPException(
@@ -114,7 +121,7 @@ async def refresh_token(
             detail="令牌类型错误",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # 获取用户ID
     user_id = payload.get("sub")
     if not user_id:
@@ -123,7 +130,7 @@ async def refresh_token(
             detail="无效的令牌payload",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # 验证用户是否存在且激活
     user = get_user_by_id(db, int(user_id))
     if not user or not user.is_active:
@@ -132,10 +139,17 @@ async def refresh_token(
             detail="用户不存在或已被禁用",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     # 生成新令牌
     tokens = generate_tokens(user.id)
-    return tokens
+
+    # 返回令牌和用户信息
+    return {
+        "access_token": tokens["access_token"],
+        "refresh_token": tokens["refresh_token"],
+        "token_type": tokens["token_type"],
+        "user": user
+    }
 
 
 @router.get("/me", response_model=User)
@@ -144,7 +158,7 @@ async def get_current_user_info(
 ):
     """
     获取当前登录用户信息
-    
+
     需要在请求头中携带访问令牌：
     Authorization: Bearer <access_token>
     """
@@ -157,7 +171,7 @@ async def logout(
 ):
     """
     用户登出
-    
+
     注意：由于使用JWT，服务端无需维护会话状态。
     客户端应删除本地存储的token。
     """

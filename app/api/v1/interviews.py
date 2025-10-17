@@ -34,7 +34,7 @@ async def create_new_interview(
 ):
     """
     创建新的面试记录
-    
+
     - **position**: 岗位名称
     - **description**: 岗位描述（可选）
     - **skills**: 技能列表
@@ -57,7 +57,7 @@ async def get_interviews(
 ):
     """
     获取当前用户的面试列表
-    
+
     - **skip**: 跳过的记录数
     - **limit**: 返回的最大记录数
     - **status**: 筛选状态（可选）
@@ -73,7 +73,7 @@ async def get_statistics(
 ):
     """
     获取当前用户的面试统计数据
-    
+
     返回：
     - total_count: 总面试次数
     - completed_count: 已完成次数
@@ -92,24 +92,24 @@ async def get_interview(
 ):
     """
     获取面试详情
-    
+
     - **interview_id**: 面试ID
     """
     interview = get_interview_by_id(db, interview_id)
-    
+
     if not interview:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="面试记录不存在"
         )
-    
+
     # 检查权限
     if interview.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="无权访问此面试记录"
         )
-    
+
     return interview
 
 
@@ -122,25 +122,25 @@ async def update_interview_info(
 ):
     """
     更新面试记录
-    
+
     - **interview_id**: 面试ID
     - 可更新字段：status, score, started_at, completed_at
     """
     interview = get_interview_by_id(db, interview_id)
-    
+
     if not interview:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="面试记录不存在"
         )
-    
+
     # 检查权限
     if interview.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="无权修改此面试记录"
         )
-    
+
     updated_interview = update_interview(db, interview_id, interview_update)
     return updated_interview
 
@@ -153,24 +153,24 @@ async def delete_interview_record(
 ):
     """
     删除面试记录
-    
+
     - **interview_id**: 面试ID
     """
     interview = get_interview_by_id(db, interview_id)
-    
+
     if not interview:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="面试记录不存在"
         )
-    
+
     # 检查权限
     if interview.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="无权删除此面试记录"
         )
-    
+
     delete_interview(db, interview_id)
     return None
 
@@ -183,26 +183,26 @@ async def start_interview_session(
 ):
     """
     开始面试
-    
+
     - **interview_id**: 面试ID
     - 将状态从 pending 改为 in_progress
     - 记录开始时间
     """
     interview = get_interview_by_id(db, interview_id)
-    
+
     if not interview:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="面试记录不存在"
         )
-    
+
     # 检查权限
     if interview.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="无权操作此面试记录"
         )
-    
+
     # 开始面试
     started_interview = start_interview(db, interview_id)
     if not started_interview:
@@ -210,7 +210,7 @@ async def start_interview_session(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="无法开始面试，请检查面试状态"
         )
-    
+
     return started_interview
 
 
@@ -223,27 +223,27 @@ async def complete_interview_session(
 ):
     """
     完成面试
-    
+
     - **interview_id**: 面试ID
     - **score**: 面试分数（可选，0-100）
     - 将状态从 in_progress 改为 completed
     - 记录完成时间
     """
     interview = get_interview_by_id(db, interview_id)
-    
+
     if not interview:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="面试记录不存在"
         )
-    
+
     # 检查权限
     if interview.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="无权操作此面试记录"
         )
-    
+
     # 完成面试
     completed_interview = complete_interview(db, interview_id, score)
     if not completed_interview:
@@ -251,7 +251,7 @@ async def complete_interview_session(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="无法完成面试，请检查面试状态"
         )
-    
+
     return completed_interview
 
 
@@ -263,25 +263,25 @@ async def cancel_interview_session(
 ):
     """
     取消面试
-    
+
     - **interview_id**: 面试ID
     - 将状态改为 cancelled
     """
     interview = get_interview_by_id(db, interview_id)
-    
+
     if not interview:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="面试记录不存在"
         )
-    
+
     # 检查权限
     if interview.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="无权操作此面试记录"
         )
-    
+
     # 取消面试
     cancelled_interview = cancel_interview(db, interview_id)
     return cancelled_interview
