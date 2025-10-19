@@ -75,3 +75,6 @@ class InterviewWithDetails(Interview):
     class Config:
         from_attributes = True
 
+
+
+

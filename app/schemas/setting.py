@@ -45,3 +45,6 @@ class Setting(SettingBase):
     class Config:
         from_attributes = True
 
+
+
+

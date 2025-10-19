@@ -254,3 +254,6 @@ def get_interview_statistics(db: Session, user_id: int) -> dict:
         "average_score": round(avg_score, 2)
     }
 
+
+
+

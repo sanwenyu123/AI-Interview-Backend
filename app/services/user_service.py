@@ -186,3 +186,6 @@ def activate_user(db: Session, user_id: int) -> Optional[User]:
     db.refresh(db_user)
     return db_user
 
+
+
+

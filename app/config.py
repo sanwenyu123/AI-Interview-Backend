@@ -69,3 +69,6 @@ class Settings(BaseSettings):
 # 创建全局配置实例
 settings = Settings()
 
+
+
+

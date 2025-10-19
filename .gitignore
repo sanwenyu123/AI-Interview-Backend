@@ -29,6 +29,8 @@ logs/
 .idea/
 *.swp
 *.swo
+.gitattributes
+.editorconfig
 
 # Uploads
 uploads/
@@ -50,4 +52,5 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+
 

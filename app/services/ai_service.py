@@ -232,3 +232,6 @@ def test_openai_connection() -> bool:
     except:
         return False
 
+
+
+
