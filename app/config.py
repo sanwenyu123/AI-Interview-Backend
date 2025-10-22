@@ -25,11 +25,30 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
-    # OpenAI配置
+    # AI/LLM 配置
+    # 提供商：openai（默认）/ openai_compat（OpenAI兼容端点，如 DeepSeek/OpenRouter/Ollama 等）/ azure
+    AI_PROVIDER: str = "openai"
+
+    # OpenAI 或 OpenAI 兼容端点
     OPENAI_API_KEY: str = ""
+    OPENAI_BASE_URL: str | None = None  # 兼容端点需设置，例如 https://api.deepseek.com/v1 或 http://localhost:11434/v1
     OPENAI_MODEL: str = "gpt-3.5-turbo"
     OPENAI_MAX_TOKENS: int = 2000
     OPENAI_TEMPERATURE: float = 0.7
+
+    # Azure OpenAI（可选）
+    AZURE_OPENAI_API_KEY: str | None = None
+    AZURE_OPENAI_ENDPOINT: str | None = None
+    AZURE_OPENAI_API_VERSION: str | None = None
+    AZURE_OPENAI_DEPLOYMENT: str | None = None
+
+    # 语音配置（默认前端 WebSpeech，可切换为火山引擎等）
+    VOICE_PROVIDER: str = "webspeech"  # webspeech | volcengine | aliyun | xunfei
+    VOLC_ACCESS_KEY_ID: str | None = None
+    VOLC_SECRET_ACCESS_KEY: str | None = None
+    VOLC_REGION: str | None = "cn-beijing"
+    VOLC_TTS_VOICE: str | None = "zh-CN-XiaoxiaoNeural"
+    VOLC_TTS_SPEED: float = 1.0
     
     # CORS配置
     ALLOWED_ORIGINS: str = '["http://localhost:3000","http://127.0.0.1:3000"]'

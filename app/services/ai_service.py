@@ -4,7 +4,6 @@ AI服务
 """
 from typing import List, Dict
 import json
-import openai
 from openai import OpenAI
 
 from app.config import settings
@@ -15,8 +14,24 @@ from app.utils.ai_prompts import (
 )
 
 
-# 初始化OpenAI客户端
-client = OpenAI(api_key=settings.OPENAI_API_KEY) if settings.OPENAI_API_KEY else None
+# 初始化 OpenAI 或兼容客户端
+def _build_client() -> OpenAI | None:
+    if settings.AI_PROVIDER in ("openai", "openai_compat"):
+        api_key = settings.OPENAI_API_KEY
+        if not api_key:
+            return None
+        base_url = settings.OPENAI_BASE_URL or None
+        return OpenAI(api_key=api_key, base_url=base_url)
+    # 预留 Azure OpenAI（如需）
+    if settings.AI_PROVIDER == "azure" and settings.AZURE_OPENAI_API_KEY and settings.AZURE_OPENAI_ENDPOINT:
+        # 新版 openai SDK 对 Azure 也用 OpenAI 类，通过 base_url 和 api_version 指定
+        return OpenAI(
+            api_key=settings.AZURE_OPENAI_API_KEY,
+            base_url=f"{settings.AZURE_OPENAI_ENDPOINT}/openai/deployments/{settings.AZURE_OPENAI_DEPLOYMENT}",
+        )
+    return None
+
+client = _build_client()
 
 
 def generate_interview_questions(
@@ -45,7 +60,7 @@ def generate_interview_questions(
         Exception: AI服务调用失败时抛出异常
     """
     if not client:
-        raise Exception("OpenAI API密钥未配置")
+        raise Exception("AI服务未配置：请设置 OPENAI_API_KEY 或兼容端点")
     
     # 生成提示词
     prompt = get_question_generation_prompt(
@@ -58,7 +73,7 @@ def generate_interview_questions(
     )
     
     try:
-        # 调用OpenAI API
+        # 调用 OpenAI/兼容 API
         response = client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[
@@ -111,7 +126,7 @@ def evaluate_interview_answers(
         Exception: AI服务调用失败时抛出异常
     """
     if not client:
-        raise Exception("OpenAI API密钥未配置")
+        raise Exception("AI服务未配置：请设置 OPENAI_API_KEY 或兼容端点")
     
     # 生成提示词
     prompt = get_evaluation_prompt(
@@ -122,7 +137,7 @@ def evaluate_interview_answers(
     )
     
     try:
-        # 调用OpenAI API
+        # 调用 OpenAI/兼容 API
         response = client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[
@@ -184,7 +199,7 @@ def analyze_single_answer(
         Exception: AI服务调用失败时抛出异常
     """
     if not client:
-        raise Exception("OpenAI API密钥未配置")
+        raise Exception("AI服务未配置：请设置 OPENAI_API_KEY 或兼容端点")
     
     # 生成提示词
     prompt = get_answer_analysis_prompt(
@@ -194,7 +209,7 @@ def analyze_single_answer(
     )
     
     try:
-        # 调用OpenAI API
+        # 调用 OpenAI/兼容 API
         response = client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[
