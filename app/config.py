@@ -49,6 +49,26 @@ class Settings(BaseSettings):
     VOLC_REGION: str | None = "cn-beijing"
     VOLC_TTS_VOICE: str | None = "zh-CN-XiaoxiaoNeural"
     VOLC_TTS_SPEED: float = 1.0
+    # 火山引擎短语音 ASR （HTTP）
+    VOLC_ASR_APP_ID: str | None = None
+    VOLC_ASR_TOKEN: str | None = None
+    VOLC_ASR_LANGUAGE: str = "zh-CN"
+    VOLC_ASR_FORMAT: str = "wav"  # wav/mp3/opus 等
+    # 录音文件识别 HTTP 端点（若不为空则优先使用），例如：
+    # https://openspeech.bytedance.com/api/v2/short_asr （以你的文档为准）
+    VOLC_ASR_ENDPOINT: str | None = None
+    # 表单里承载音频文件的字段名，文档一般为 file 或 audio
+    VOLC_ASR_FILE_FIELD: str = "file"
+    # 是否用 multipart/form-data 方式提交（新版接口通常需要）
+    VOLC_ASR_USE_MULTIPART: bool = True
+
+    # TOS 对象存储（用于生成公网可访问音频 URL）
+    TOS_ACCESS_KEY_ID: str | None = None
+    TOS_SECRET_ACCESS_KEY: str | None = None
+    TOS_REGION: str | None = None
+    TOS_BUCKET: str | None = None
+    TOS_ENDPOINT: str | None = None  # 例如 tos-cn-beijing.volces.com
+    TOS_SSL_VERIFY: bool = True  # 如遇本机证书链问题可暂时设为 False
     
     # CORS配置
     ALLOWED_ORIGINS: str = '["http://localhost:3000","http://127.0.0.1:3000"]'

@@ -75,12 +75,14 @@ async def health_check():
 
 # 导入并注册路由
 from app.api.v1 import auth, interviews, questions, answers, evaluations
+from app.api.v1 import voice
 
 app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["认证"])
 app.include_router(interviews.router, prefix=f"{settings.API_V1_PREFIX}/interviews", tags=["面试管理"])
 app.include_router(questions.router, prefix=f"{settings.API_V1_PREFIX}/questions", tags=["问题管理"])
 app.include_router(answers.router, prefix=f"{settings.API_V1_PREFIX}/answers", tags=["答案管理"])
 app.include_router(evaluations.router, prefix=f"{settings.API_V1_PREFIX}/evaluations", tags=["评价管理"])
+app.include_router(voice.router, prefix=f"{settings.API_V1_PREFIX}/voice", tags=["语音"])
 
 
 if __name__ == "__main__":
